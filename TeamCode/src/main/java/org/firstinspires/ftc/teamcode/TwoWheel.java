@@ -23,7 +23,7 @@ public class TwoWheel {
     private int[] finalEncoderPos;
     private double displacement;
     private double[] pos = new double[2];
-    private final double CONVERSION = 2. * Math.PI * 0.0254 / 480.;
+    private final double CONVERSION = 2. * Math.PI * 0.0254 / 480.; // meters per count
 
     // rotation variables
     private Orientation angles;
@@ -96,6 +96,25 @@ public class TwoWheel {
             }
         }
         brake(125);
+    }
+
+    public void moveEncoder(double power, int dist) {
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        left.setTargetPosition(finalEncoderPos[0] + dist);
+        right.setTargetPosition(finalEncoderPos[1] + dist);
+        left.setPower(power);
+        right.setPower(power);
+    }
+
+    public void moveDist(double power, double dist) {
+        int countDist = (int) (dist / CONVERSION);
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        left.setTargetPosition(finalEncoderPos[0] + countDist);
+        right.setTargetPosition(finalEncoderPos[1] + countDist);
+        left.setPower(power);
+        right.setPower(power);
     }
 
     public void setMode(boolean useEncoder) {
