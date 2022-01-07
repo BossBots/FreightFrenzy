@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -36,6 +37,8 @@ public class TwoWheel {
     public TwoWheel(DcMotor initLeft, DcMotor initRight, BNO055IMU initIMU) {
         left = initLeft;
         right = initRight;
+        left.setDirection(DcMotorSimple.Direction.FORWARD);
+        right.setDirection(DcMotorSimple.Direction.FORWARD);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -85,6 +88,21 @@ public class TwoWheel {
         brake(125);
     }
 
+    public void fd(double pwr, double dist) {
+        double angle = getAngle();
+        double initPos = pos[1];
+        while (pos[1] - initPos < dist) {
+            if (Math.abs(getAngle() - angle) < 5) {
+                drive(pwr, 0);
+            } else if ((getAngle() - angle) > 5) {
+                drive(pwr, pwr/2);
+            } else {
+                drive(pwr, -pwr/2);
+            }
+        }
+        brake(125);
+    }
+
     public void rot(double pwr, double targetAngle) {
         if (targetAngle != 180) {
             while (Math.abs(angles.thirdAngle - targetAngle) > 3) {
@@ -98,24 +116,26 @@ public class TwoWheel {
         brake(125);
     }
 
-    public void moveEncoder(double power, int dist) {
+    /*public void moveEncoder(double power, int dist) {
+        left.setTargetPosition(dist);
+        right.setTargetPosition(dist);
         left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        left.setTargetPosition(finalEncoderPos[0] + dist);
-        right.setTargetPosition(finalEncoderPos[1] + dist);
         left.setPower(power);
         right.setPower(power);
+        integrate();
     }
 
     public void moveDist(double power, double dist) {
         int countDist = (int) (dist / CONVERSION);
-        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         left.setTargetPosition(finalEncoderPos[0] + countDist);
         right.setTargetPosition(finalEncoderPos[1] + countDist);
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         left.setPower(power);
         right.setPower(power);
-    }
+        integrate();
+    }*/
 
     public void setMode(boolean useEncoder) {
         if (useEncoder) {
@@ -128,9 +148,12 @@ public class TwoWheel {
     }
 
     public void integrate() {
+        if (counts == 0) {
+            initEncoderPos = new int[] {left.getCurrentPosition(), right.getCurrentPosition()};
+        }
         finalEncoderPos = new int[] {left.getCurrentPosition(), right.getCurrentPosition()};
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-        displacement = ((double) (finalEncoderPos[0] - initEncoderPos[0]) + (double) (finalEncoderPos[1] - initEncoderPos[1])) * CONVERSION / 2.;
+        displacement = ((double) (initEncoderPos[0] - finalEncoderPos[0]) + (double) (finalEncoderPos[1] - initEncoderPos[1])) * CONVERSION / 2.;
         pos[0] += displacement * Math.sin(Math.PI * angles.thirdAngle / 180.);
         pos[1] += displacement * Math.cos(Math.PI * angles.thirdAngle / 180.);
         counts += 1;

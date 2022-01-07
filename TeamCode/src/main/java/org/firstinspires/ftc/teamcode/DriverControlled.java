@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
-public class TeleTest extends LinearOpMode {
+public class DriverControlled extends LinearOpMode {
 
     private TwoWheel driveTrain;
     private DcMotor linSlide;
@@ -18,9 +18,13 @@ public class TeleTest extends LinearOpMode {
     private DcMotor arm;
     private Servo claw;
     private double[] pos;
-    private boolean initPress = false;
-    private boolean finalPress = false;
+    private boolean initPressDrive = false;
+    private boolean finalPressDrive = false;
+    private boolean mode = false;
+    private boolean initPressClaw = false;
+    private boolean finalPressClaw = false;
     private boolean clamp = false;
+
 
     @Override
     public void runOpMode() {
@@ -39,27 +43,35 @@ public class TeleTest extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
-            /*if (gamepad1.x) {
+            // drive
+            if (gamepad1.x) {
                 driveTrain.brake(0);
+            } else if (mode) {
+                driveTrain.drive((gamepad1.right_trigger - gamepad1.left_trigger)/4, gamepad1.left_stick_x/4);
             } else {
                 driveTrain.drive(gamepad1.right_trigger - gamepad1.left_trigger, gamepad1.left_stick_x);
-            }*/
-            driveTrain.drive(gamepad1.right_trigger - gamepad1.left_trigger, gamepad1.left_stick_x);
+            }
+            finalPressDrive = gamepad1.a;
+            if (!initPressDrive && finalPressDrive) {
+                mode = !mode;
+            }
+            initPressDrive = finalPressDrive;
 
-            if (gamepad1.dpad_up) {
-                linSlide.setPower(0.25);
-            } else if (gamepad1.dpad_down) {
-                linSlide.setPower(-0.25);
+            // linear slide
+            if (gamepad2.dpad_up) {
+                linSlide.setPower(0.5);
+            } else if (gamepad2.dpad_down) {
+                linSlide.setPower(-0.5);
             } else {
                 linSlide.setPower(0);
                 linSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
             // carousel spins
-            if (gamepad1.x) {
+            if (gamepad2.x) {
                 leftWheel.setPower(1);
                 rightWheel.setPower(1);
-            } else if (gamepad1.b) {
+            } else if (gamepad2.b) {
                 leftWheel.setPower(-1);
                 rightWheel.setPower(-1);
             } else {
@@ -67,25 +79,29 @@ public class TeleTest extends LinearOpMode {
                 rightWheel.setPower(0);
             }
 
-            if (Math.abs(gamepad1.right_stick_y) > 0.15) {
-                arm.setPower(gamepad1.right_stick_y * 0.25);
+            // arm controls
+            if (Math.abs(gamepad2.right_stick_y) > 0.15) {
+                arm.setPower(gamepad2.right_stick_y * 0.25);
             } else {
                 arm.setPower(0);
                 arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
-            finalPress = gamepad1.a;
-            if (!initPress && finalPress) {
+            // claw controls
+            finalPressClaw = gamepad2.a;
+            if (!initPressClaw && finalPressClaw) {
                 clamp = !clamp;
             }
-            initPress = finalPress;
+            initPressClaw = finalPressClaw;
             if (clamp) {
                 claw.setPosition(0);
             } else {
                 claw.setPosition(0.6);
             }
 
+            // telemetry
             pos = driveTrain.getPos();
+            telemetry.addData("precision", mode);
             telemetry.addData("pos x", pos[0]);
             telemetry.addData("pos y", pos[1]);
             telemetry.addData("left", driveTrain.getEncoderPos()[0]);
