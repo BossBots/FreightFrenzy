@@ -29,7 +29,11 @@ public class DriverControlled extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        driveTrain = new TwoWheel(hardwareMap.get(DcMotor.class, "left"), hardwareMap.get(DcMotor.class, "right"), hardwareMap.get(BNO055IMU.class, "imu"));
+        driveTrain = new TwoWheel(
+                hardwareMap.get(DcMotor.class, "left"),
+                hardwareMap.get(DcMotor.class, "right"),
+                hardwareMap.get(BNO055IMU.class, "imu")
+        );
         linSlide = hardwareMap.get(DcMotor.class, "linSlide");
         linSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftWheel = hardwareMap.get(DcMotor.class, "leftWheel");

@@ -71,7 +71,7 @@ public class TwoWheel {
         }
     }
 
-    public void fd(double pwr, long dur) {
+    /*public void fd(double pwr, long dur) {
         int leftPos = left.getCurrentPosition();
         int rightPos = right.getCurrentPosition();
         double angle = getAngle();
@@ -86,7 +86,7 @@ public class TwoWheel {
             }
         }
         brake(125);
-    }
+    }*/
 
     public void fd(double pwr, double dist) {
         double angle = getAngle();
