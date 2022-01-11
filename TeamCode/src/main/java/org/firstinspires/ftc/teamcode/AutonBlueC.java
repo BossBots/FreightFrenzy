@@ -26,6 +26,8 @@ public class AutonBlueC extends LinearOpMode {
     private Servo claw;
     private int recognition = 0;
     private final int[][] tierPos = {{0, 120}, {480, 120}, {960, 120}};
+    private ComputerVision cv;
+    private int[] avgRGB;
 
     @Override
     public void runOpMode() {
@@ -35,12 +37,13 @@ public class AutonBlueC extends LinearOpMode {
                 hardwareMap.get(DcMotor.class, "right"),
                 hardwareMap.get(BNO055IMU.class, "imu")
         );
-        driveTrain.setMode(false);
+        driveTrain.setMode(true);
         linSlide = hardwareMap.get(DcMotor.class, "linSlide");
         linSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm = hardwareMap.get(DcMotor.class, "arm");
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         claw = hardwareMap.get(Servo.class, "claw");
+        cv = new ComputerVision(hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
 
         waitForStart();
 
@@ -49,6 +52,27 @@ public class AutonBlueC extends LinearOpMode {
             claw.setPosition(0);
 
             // get recognition
+            driveTrain.fd(-0.25, 0.2);
+            sleep(500);
+            avgRGB = cv.getRGB();
+            if (avgRGB[1] <= 0.8 * avgRGB[0] && avgRGB[2] <= 0.64 * avgRGB[0]) {
+                telemetry.log().add("Detected!");
+                telemetry.update();
+            }
+            driveTrain.fd(-0.25, 0.2);
+            sleep(500);
+            avgRGB = cv.getRGB();
+            if (avgRGB[1] <= 0.8 * avgRGB[0] && avgRGB[2] <= 0.64 * avgRGB[0]) {
+                telemetry.log().add("Detected!");
+                telemetry.update();
+            }
+            driveTrain.fd(-0.25, 0.2);
+            sleep(500);
+            avgRGB = cv.getRGB();
+            if (avgRGB[1] <= 0.8 * avgRGB[0] && avgRGB[2] <= 0.64 * avgRGB[0]) {
+                telemetry.log().add("Detected!");
+                telemetry.update();
+            }
 
             // prepare to place freight
             while (linSlide.getCurrentPosition() < tierPos[recognition][0] && arm.getCurrentPosition() < tierPos[recognition][1]) {

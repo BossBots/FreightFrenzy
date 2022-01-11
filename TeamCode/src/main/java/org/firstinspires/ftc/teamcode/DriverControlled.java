@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 @TeleOp
 public class DriverControlled extends LinearOpMode {
@@ -24,6 +25,9 @@ public class DriverControlled extends LinearOpMode {
     private boolean initPressClaw = false;
     private boolean finalPressClaw = false;
     private boolean clamp = false;
+    private Gamepad.RumbleEffect rumbleEffect;
+    private final double T1 = 80;
+    private final double T2 = 110;
 
 
     @Override
@@ -43,6 +47,9 @@ public class DriverControlled extends LinearOpMode {
         arm = hardwareMap.get(DcMotor.class, "arm");
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         claw = hardwareMap.get(Servo.class, "claw");
+        rumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.5, 0.5, 1000)
+                .build();
 
         waitForStart();
         while (opModeIsActive()) {
@@ -51,7 +58,7 @@ public class DriverControlled extends LinearOpMode {
             if (gamepad1.x) {
                 driveTrain.brake(0);
             } else if (mode) {
-                driveTrain.drive((gamepad1.right_trigger - gamepad1.left_trigger)/4, gamepad1.left_stick_x/4);
+                driveTrain.drive((gamepad1.right_trigger - gamepad1.left_trigger)/3, gamepad1.left_stick_x/3);
             } else {
                 driveTrain.drive(gamepad1.right_trigger - gamepad1.left_trigger, gamepad1.left_stick_x);
             }
@@ -85,7 +92,7 @@ public class DriverControlled extends LinearOpMode {
 
             // arm controls
             if (Math.abs(gamepad2.right_stick_y) > 0.15) {
-                arm.setPower(gamepad2.right_stick_y * 0.25);
+                arm.setPower(gamepad2.right_stick_y * 0.01);
             } else {
                 arm.setPower(0);
                 arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -103,6 +110,9 @@ public class DriverControlled extends LinearOpMode {
                 claw.setPosition(0.6);
             }
 
+            if (getRuntime() >= T1 && getRuntime() < T1+1) {gamepad1.runRumbleEffect(rumbleEffect);}
+            if (getRuntime() >= T2 && getRuntime() < T2+1) {gamepad1.runRumbleEffect(rumbleEffect);}
+
             // telemetry
             pos = driveTrain.getPos();
             telemetry.addData("precision", mode);
@@ -111,6 +121,8 @@ public class DriverControlled extends LinearOpMode {
             telemetry.addData("left", driveTrain.getEncoderPos()[0]);
             telemetry.addData("right", driveTrain.getEncoderPos()[1]);
             telemetry.addData("counts", driveTrain.getCounts());
+            telemetry.addData("arm", arm.getCurrentPosition());
+            telemetry.addData("slide", linSlide.getCurrentPosition());
             telemetry.update();
         }
     }

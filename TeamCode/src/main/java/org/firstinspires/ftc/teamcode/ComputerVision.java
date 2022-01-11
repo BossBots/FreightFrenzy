@@ -14,10 +14,10 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class ComputerVision {
 
-    private int avg_r;
-    private int avg_g;
-    private int avg_b;
     private OpenCvCamera phoneCam;
+    private final double[][] topLeft = {{0d, 1d/3d}, {1d/3d, 1d/3d}, {2d/3d, 1d/3d}};
+    private final double[][] botRight = {{1d/3d, 2d/3d}, {2d/3d, 2d/3d}, {1d, 2d/3d}};
+    private int[][] avgRGB = new int[3][3];
 
     public ComputerVision(int camId) {
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, camId);
@@ -33,19 +33,24 @@ public class ComputerVision {
         });
     }
 
-    public int[] getRGB() {return new int[] {avg_r, avg_g, avg_b};}
+    public int getAnalysis() {
+        int output = 0;
+        for (int i = 0; i < 3; i++) {
+            if (avgRGB[i][1] <= 0.8 * avgRGB[i][0] && avgRGB[i][2] <= 0.64 * avgRGB[i][0]) {
+                return output;
+            }
+        }
+        return output;
+    }
+
+    public int[][] getRGB() {return avgRGB;}
 
     class Pipeline extends OpenCvPipeline {
 
         private boolean viewportPaused = false;
-        private final Scalar RED = new Scalar(255, 0, 0);
-        private final Scalar GREEN = new Scalar(0, 255, 0);
-        private final Scalar BLUE = new Scalar(0, 0, 255);
         private Mat YCrCb = new Mat();
         private Mat Cb = new Mat();
-        private Point pointTopLeft;
-        private Point pointBotRight;
-        private Mat region;
+        private Mat[] regions = new Mat[3];
 
         private void inputToCb(Mat input) {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
@@ -54,30 +59,40 @@ public class ComputerVision {
 
         @Override
         public void init(Mat firstFrame) {
-            pointTopLeft = new Point(firstFrame.cols() / 3, firstFrame.rows() / 3);
-            pointBotRight = new Point(firstFrame.cols() * (2f / 3f), firstFrame.rows() * (2f / 3f));
             inputToCb(firstFrame);
-            region = Cb.submat(new Rect(pointTopLeft, pointBotRight));
+            for (int i = 0; i < 3; i++) {
+                regions[i] = firstFrame.submat(new Rect(
+                        new Point(firstFrame.cols() * topLeft[i][0], firstFrame.rows() * topLeft[i][1]),
+                        new Point(firstFrame.cols() * botRight[i][0], firstFrame.rows() * botRight[i][1])
+                ));
+            }
+
         }
 
         @Override
         public Mat processFrame(Mat input) {
-            pointTopLeft = new Point(input.cols() / 3, input.rows() / 3);
-            pointBotRight = new Point(input.cols() * (2f / 3f), input.rows() * (2f / 3f));
-            region = input.submat(new Rect(pointTopLeft, pointBotRight));
+            for (int i = 0; i < 3; i++) {
+                regions[i] = input.submat(new Rect(
+                        new Point(input.cols() * topLeft[i][0], input.rows() * topLeft[i][1]),
+                        new Point(input.cols() * botRight[i][0], input.rows() * botRight[i][1])
+                ));
+            }
 
-            avg_r = (int) Core.mean(region).val[0];
-            avg_g = (int) Core.mean(region).val[1];
-            avg_b = (int) Core.mean(region).val[2];
-
+            for (int i = 0; i < 3; i++) {
+                double[] avg = Core.mean(regions[i]).val;
+                for (int j = 0; j < 3; j++) {
+                    avgRGB[i][j] = (int) avg[j];
+                }
+            }
+            int rect = getAnalysis();
             Imgproc.rectangle(
                     input,
                     new Point(
-                            input.cols() / 3,
-                            input.rows() / 3),
+                            input.cols() * topLeft[rect][0],
+                            input.rows() * topLeft[rect][1]),
                     new Point(
-                            input.cols() * (2f / 3f),
-                            input.rows() * (2f / 3f)),
+                            input.cols() * botRight[rect][0],
+                            input.rows() * botRight[rect][1]),
                     new Scalar(0, 255, 0), 4);
             return input;
         }

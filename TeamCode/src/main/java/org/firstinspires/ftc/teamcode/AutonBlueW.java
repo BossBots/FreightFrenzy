@@ -28,6 +28,8 @@ public class AutonBlueW extends LinearOpMode {
     private Servo claw;
     private int recognition = 0;
     private final int[][] tierPos = {{0, 120}, {480, 120}, {960, 120}};
+    private ComputerVision cv;
+    private int[] avgRGB;
 
     @Override
     public void runOpMode() {
@@ -37,7 +39,7 @@ public class AutonBlueW extends LinearOpMode {
                 hardwareMap.get(DcMotor.class, "right"),
                 hardwareMap.get(BNO055IMU.class, "imu")
         );
-        driveTrain.setMode(false);
+        driveTrain.setMode(true);
         leftWheel = hardwareMap.get(DcMotor.class, "leftWheel");
         leftWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightWheel = hardwareMap.get(DcMotor.class, "rightWheel");
@@ -47,6 +49,7 @@ public class AutonBlueW extends LinearOpMode {
         arm = hardwareMap.get(DcMotor.class, "arm");
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         claw = hardwareMap.get(Servo.class, "claw");
+        cv = new ComputerVision(hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName()));
 
         waitForStart();
 
