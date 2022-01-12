@@ -24,7 +24,7 @@ public class AutonRedC extends LinearOpMode {
     private DcMotor linSlide;
     private DcMotor arm;
     private Servo claw;
-    private int recognition = 0;
+    private int recognition;
     private final int[][] tierPos = {{0, 120}, {480, 120}, {960, 120}};
     private ComputerVision cv;
     private int[] avgRGB;
@@ -52,6 +52,7 @@ public class AutonRedC extends LinearOpMode {
             claw.setPosition(0);
 
             // get recognition
+            recognition = cv.getAnalysis();
 
             // prepare to place freight
             while (linSlide.getCurrentPosition() < tierPos[recognition][0] && arm.getCurrentPosition() < tierPos[recognition][1]) {

@@ -15,8 +15,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class ComputerVision {
 
     private OpenCvCamera phoneCam;
-    private final double[][] topLeft = {{0d, 1d/3d}, {1d/3d, 1d/3d}, {2d/3d, 1d/3d}};
-    private final double[][] botRight = {{1d/3d, 2d/3d}, {2d/3d, 2d/3d}, {1d, 2d/3d}};
+    private final double[][] topLeft = {{1d/3d, 0d/3d}, {1d/3d, 1d/3d}, {1d/3d, 2d/3d}};
+    private final double[][] botRight = {{2d/3d, 1d/3d}, {2d/3d, 2d/3d}, {2d/3d, 3d/3d}};
     private int[][] avgRGB = new int[3][3];
 
     public ComputerVision(int camId) {
@@ -34,10 +34,10 @@ public class ComputerVision {
     }
 
     public int getAnalysis() {
-        int output = 0;
+        int output = -1;
         for (int i = 0; i < 3; i++) {
-            if (avgRGB[i][1] <= 0.8 * avgRGB[i][0] && avgRGB[i][2] <= 0.64 * avgRGB[i][0]) {
-                return output;
+            if (avgRGB[i][1] < 0.8 * avgRGB[i][0] && avgRGB[i][2] < 0.64 * avgRGB[i][0] && (output == -1 || avgRGB[output][0] <= avgRGB[i][0])) {
+                output = i;
             }
         }
         return output;
@@ -85,15 +85,17 @@ public class ComputerVision {
                 }
             }
             int rect = getAnalysis();
-            Imgproc.rectangle(
-                    input,
-                    new Point(
-                            input.cols() * topLeft[rect][0],
-                            input.rows() * topLeft[rect][1]),
-                    new Point(
-                            input.cols() * botRight[rect][0],
-                            input.rows() * botRight[rect][1]),
-                    new Scalar(0, 255, 0), 4);
+            if (rect != -1) {
+                Imgproc.rectangle(
+                        input,
+                        new Point(
+                                input.cols() * topLeft[rect][0],
+                                input.rows() * topLeft[rect][1]),
+                        new Point(
+                                input.cols() * botRight[rect][0],
+                                input.rows() * botRight[rect][1]),
+                        new Scalar(0, 255, 0), 4);
+            }
             return input;
         }
 

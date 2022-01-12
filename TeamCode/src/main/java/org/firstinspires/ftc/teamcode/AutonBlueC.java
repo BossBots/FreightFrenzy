@@ -54,7 +54,7 @@ public class AutonBlueC extends LinearOpMode {
             // get recognition
             driveTrain.fd(-0.25, 0.2);
             sleep(500);
-            avgRGB = cv.getRGB();
+            /*avgRGB = cv.getRGB();
             if (avgRGB[1] <= 0.8 * avgRGB[0] && avgRGB[2] <= 0.64 * avgRGB[0]) {
                 telemetry.log().add("Detected!");
                 telemetry.update();
@@ -72,7 +72,7 @@ public class AutonBlueC extends LinearOpMode {
             if (avgRGB[1] <= 0.8 * avgRGB[0] && avgRGB[2] <= 0.64 * avgRGB[0]) {
                 telemetry.log().add("Detected!");
                 telemetry.update();
-            }
+            }*/
 
             // prepare to place freight
             while (linSlide.getCurrentPosition() < tierPos[recognition][0] && arm.getCurrentPosition() < tierPos[recognition][1]) {
