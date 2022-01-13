@@ -58,8 +58,10 @@ public class DriverControlled extends LinearOpMode {
             if (gamepad1.x) {
                 driveTrain.brake(0);
             } else if (mode) {
+                driveTrain.setMode(true);
                 driveTrain.drive((gamepad1.right_trigger - gamepad1.left_trigger)/3, gamepad1.left_stick_x/3);
             } else {
+                driveTrain.setMode(false);
                 driveTrain.drive(gamepad1.right_trigger - gamepad1.left_trigger, gamepad1.left_stick_x);
             }
             finalPressDrive = gamepad1.a;
@@ -92,7 +94,7 @@ public class DriverControlled extends LinearOpMode {
 
             // arm controls
             if (Math.abs(gamepad2.right_stick_y) > 0.15) {
-                arm.setPower(gamepad2.right_stick_y * 0.01);
+                arm.setPower(gamepad2.right_stick_y * 0.25);
             } else {
                 arm.setPower(0);
                 arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -107,7 +109,7 @@ public class DriverControlled extends LinearOpMode {
             if (clamp) {
                 claw.setPosition(0);
             } else {
-                claw.setPosition(0.6);
+                claw.setPosition(0.75);
             }
 
             if (getRuntime() >= T1 && getRuntime() < T1+1) {gamepad1.runRumbleEffect(rumbleEffect);}

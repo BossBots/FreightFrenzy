@@ -15,9 +15,12 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class ComputerVision {
 
     private OpenCvCamera phoneCam;
-    private final double[][] topLeft = {{1d/3d, 0d/3d}, {1d/3d, 1d/3d}, {1d/3d, 2d/3d}};
-    private final double[][] botRight = {{2d/3d, 1d/3d}, {2d/3d, 2d/3d}, {2d/3d, 3d/3d}};
+    private final double[][] topLeft = {{2d/3d, 0d/3d}, {2d/3d, 1d/3d}, {2d/3d, 2d/3d}};
+    private final double[][] botRight = {{3d/3d, 1d/3d}, {3d/3d, 2d/3d}, {3d/3d, 3d/3d}};
     private int[][] avgRGB = new int[3][3];
+    private final double MAX_GREEN = 0.8;
+    private final double MIN_GREEN = 0.3;
+    private final double MAX_BLUE = 0.64;
 
     public ComputerVision(int camId) {
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, camId);
@@ -25,7 +28,7 @@ public class ComputerVision {
         phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                phoneCam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
             }
             @Override
             public void onError(int errorCode) {
@@ -36,7 +39,7 @@ public class ComputerVision {
     public int getAnalysis() {
         int output = -1;
         for (int i = 0; i < 3; i++) {
-            if (avgRGB[i][1] < 0.8 * avgRGB[i][0] && avgRGB[i][2] < 0.64 * avgRGB[i][0] && (output == -1 || avgRGB[output][0] <= avgRGB[i][0])) {
+            if (avgRGB[i][1] < MAX_GREEN * avgRGB[i][0] && avgRGB[i][1] > MIN_GREEN * avgRGB[i][0] && avgRGB[i][2] < MAX_BLUE * avgRGB[i][0] && (output == -1 || avgRGB[output][0] <= avgRGB[i][0])) {
                 output = i;
             }
         }
