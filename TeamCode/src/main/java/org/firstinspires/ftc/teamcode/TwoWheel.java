@@ -47,6 +47,7 @@ public class TwoWheel {
         params.calibrationDataFile = "IMUCal.java";
         imu.initialize(params);
         counts = 0;
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
         setMode(false);
     }
@@ -89,8 +90,8 @@ public class TwoWheel {
 
     public void fd(double pwr, double dist) {
         double angle = getAngle();
-        double initPos = pos[1];
-        while (pos[1] - initPos < dist) {
+        double[] initPos = pos;
+        while (Math.sqrt((Math.pow(pos[0] - initPos[0], 2) + Math.pow(pos[1] - initPos[1], 2))) < dist) {
             if (Math.abs(getAngle() - angle) < 5) {
                 drive(pwr, 0);
             } else if ((getAngle() - angle) > 5) {

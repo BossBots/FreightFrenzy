@@ -38,9 +38,14 @@ public class ComputerVision {
 
     public int getAnalysis() {
         int output = -1;
+        int max_red = 0;
         for (int i = 0; i < 3; i++) {
-            if (avgRGB[i][1] < MAX_GREEN * avgRGB[i][0] && avgRGB[i][1] > MIN_GREEN * avgRGB[i][0] && avgRGB[i][2] < MAX_BLUE * avgRGB[i][0] && (output == -1 || avgRGB[output][0] <= avgRGB[i][0])) {
+            /*if (avgRGB[i][1] < MAX_GREEN * avgRGB[i][0] && avgRGB[i][1] > MIN_GREEN * avgRGB[i][0] && avgRGB[i][2] < MAX_BLUE * avgRGB[i][0] && (output == -1 || avgRGB[output][0] <= avgRGB[i][0])) {
                 output = i;
+            }*/
+            if (avgRGB[i][0] > max_red) {
+                output = i;
+                max_red = avgRGB[i][0];
             }
         }
         return output;

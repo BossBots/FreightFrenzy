@@ -57,6 +57,8 @@ public class AutonRedC extends LinearOpMode {
 
             claw.setPosition(0);
             // get recognition
+            recognition = cv.getAnalysis();
+            if (recognition == -1) {recognition = 0;}
 
             // duck
             driveTrain.fd(-0.5, -1.);
