@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp
 public class ArmPositionTest extends LinearOpMode {
 
-    private final int[][] tierPos = {{0, 0}, {0, 120}, {480, 120}, {960, 120}};
+    private final int[][] tierPos = {{0, 0}, {0, 360}, {-1650, 360}, {-2725, 360}};
     private int currentPos = 0;
     private DcMotor linSlide;
     private DcMotor arm;
@@ -33,9 +33,9 @@ public class ArmPositionTest extends LinearOpMode {
 
             if (Math.abs(arm.getCurrentPosition() - tierPos[currentPos][1]) > 20) {
                 if (arm.getCurrentPosition() > tierPos[currentPos][1]) {
-                    arm.setPower(-0.25);
+                    arm.setPower(-0.05);
                 } else {
-                    arm.setPower(0.25);
+                    arm.setPower(0.05);
                 }
             }
 
