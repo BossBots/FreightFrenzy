@@ -55,11 +55,13 @@ public class DriverControlled extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
             //Special mode
-            if (gamepad1.x && gamepad1.y && gamepad1.a && gamepad1.dpad_up) {
-                if (gamepad1.b && cheatMode)
+            if (gamepad1.x && gamepad1.y && gamepad1.a && gamepad1.b) {
+                if (gamepad1.dpad_up && driveTrainMode != 0)
                     driveTrainMode = 0;
-                else
-                    driveTrainMode = 1;
+                else if (gamepad1.dpad_left)
+                    drivaTrainMode = 1;
+                else if (gamepad1.dpad_right)
+                    driveTrainMode = 2;
             }
             
             // drive
