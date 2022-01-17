@@ -39,7 +39,7 @@ public class AutonRedC extends LinearOpMode {
                 hardwareMap.get(DcMotor.class, "right"),
                 hardwareMap.get(BNO055IMU.class, "imu")
         );
-        driveTrain.setMode(true);
+        driveTrain.setMode(false);
         leftWheel = hardwareMap.get(DcMotor.class, "leftWheel");
         leftWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightWheel = hardwareMap.get(DcMotor.class, "rightWheel");
@@ -61,7 +61,7 @@ public class AutonRedC extends LinearOpMode {
             if (recognition == -1) {recognition = 0;}
 
             // duck
-            driveTrain.fd(-0.5, -1.);
+            driveTrain.fd(-0.5, 0.6);
             long start = System.currentTimeMillis();
             while (System.currentTimeMillis() - start < 2000) {
                 rightWheel.setPower(1);
@@ -69,7 +69,7 @@ public class AutonRedC extends LinearOpMode {
             }
             leftWheel.setPower(0);
             rightWheel.setPower(0);
-            driveTrain.fd(0.5, 1.);
+            driveTrain.fd(0.5, 0.75);
             driveTrain.rot(-0.25, 90);
 
             // prepare to place freight
@@ -78,12 +78,7 @@ public class AutonRedC extends LinearOpMode {
             // place freight
             driveTrain.fd(0.25, 0.5);
             claw.setPosition(0.6);
-            driveTrain.fd(-0.25, -0.25);
-
-            while (linSlide.getCurrentPosition() > 50) {
-                linSlide.setPower(-0.25);
-            }
-            linSlide.setPower(0);
+            driveTrain.fd(-0.25, 0.25);
 
             // park
             driveTrain.rot(0.25, 0);

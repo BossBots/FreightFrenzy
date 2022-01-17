@@ -90,7 +90,7 @@ public class TwoWheel {
 
     public void fd(double pwr, double dist) {
         double angle = getAngle();
-        double[] initPos = pos;
+        double[] initPos = new double[] {pos[0], pos[1]};
         while (Math.sqrt((Math.pow(pos[0] - initPos[0], 2) + Math.pow(pos[1] - initPos[1], 2))) < dist) {
             if (Math.abs(getAngle() - angle) < 5) {
                 drive(pwr, 0);

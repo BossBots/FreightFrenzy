@@ -24,7 +24,7 @@ public class DriverControlled extends LinearOpMode {
     private boolean mode = false;
     private boolean initPressClaw = false;
     private boolean finalPressClaw = false;
-    private boolean clamp = false;
+    private boolean clamp = true;
     private Gamepad.RumbleEffect rumbleEffect;
     private final double T1 = 80;
     private final double T2 = 110;
@@ -81,12 +81,12 @@ public class DriverControlled extends LinearOpMode {
             }
 
             // carousel spins
-            if (gamepad2.x) {
-                leftWheel.setPower(1);
-                rightWheel.setPower(1);
-            } else if (gamepad2.b) {
-                leftWheel.setPower(-1);
-                rightWheel.setPower(-1);
+            if (gamepad2.b) {
+                leftWheel.setPower(-0.5);
+                rightWheel.setPower(-0.5);
+            } else if (gamepad2.x) {
+                leftWheel.setPower(0.5);
+                rightWheel.setPower(0.5);
             } else {
                 leftWheel.setPower(0);
                 rightWheel.setPower(0);
@@ -109,7 +109,7 @@ public class DriverControlled extends LinearOpMode {
             if (clamp) {
                 claw.setPosition(0);
             } else {
-                claw.setPosition(0.75);
+                claw.setPosition(0.9);
             }
 
             if (getRuntime() >= T1 && getRuntime() < T1+1) {gamepad1.runRumbleEffect(rumbleEffect);}
