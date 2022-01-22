@@ -36,8 +36,6 @@ public class TwoWheel {
     public TwoWheel(DcMotor initLeft, DcMotor initRight, BNO055IMU initIMU) {
         left = initLeft;
         right = initRight;
-        left.setDirection(DcMotorSimple.Direction.FORWARD);
-        right.setDirection(DcMotorSimple.Direction.FORWARD);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -88,10 +86,11 @@ public class TwoWheel {
         brake(125);
     }*/
 
-    public void fd(double pwr, double dist) {
+    public void fd(double pwr, double dist, long maxDur) {
         double angle = getAngle();
         double[] initPos = new double[] {pos[0], pos[1]};
-        while (Math.sqrt((Math.pow(pos[0] - initPos[0], 2) + Math.pow(pos[1] - initPos[1], 2))) < dist) {
+        long start = System.currentTimeMillis();
+        while (Math.sqrt((Math.pow(pos[0] - initPos[0], 2) + Math.pow(pos[1] - initPos[1], 2))) < dist && System.currentTimeMillis() - start < maxDur) {
             if (Math.abs(getAngle() - angle) < 5) {
                 drive(pwr, 0);
             } else if ((getAngle() - angle) > 5) {
@@ -168,7 +167,7 @@ public class TwoWheel {
         }
 
         leftPower = move + yaw;
-        rightPower = move - yaw;
+        rightPower = -(move - yaw);
 
         if (leftPower > 1) {
             leftPower = 1;

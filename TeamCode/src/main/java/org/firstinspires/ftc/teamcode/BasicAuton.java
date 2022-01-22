@@ -27,17 +27,16 @@ public class BasicAuton extends LinearOpMode {
         leftWheel = hardwareMap.get(DcMotor.class, "leftWheel");
         leftWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         claw = hardwareMap.get(Servo.class, "claw");
-        claw.setPosition(0);
 
 
         waitForStart();
 
         if (opModeIsActive()) {
-            driveTrain.fd(-0.3, 0.25);
-            rightWheel.setPower(-0.5);
+            driveTrain.fd(-0.3, 0.25, 5000);
+            rightWheel.setPower(0.5);
             sleep(5000);
             rightWheel.setPower(0);
-            driveTrain.fd(0.75, 1.75);
+            driveTrain.fd(0.75, 1.75, 10000);
             sleep(2000);
         }
     }

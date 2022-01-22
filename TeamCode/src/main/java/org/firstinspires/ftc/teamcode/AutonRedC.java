@@ -27,7 +27,7 @@ public class AutonRedC extends LinearOpMode {
     private DcMotor arm;
     private Servo claw;
     private int recognition = 0;
-    private final int[][] tierPos = {{0, 120}, {480, 120}, {960, 120}};
+    private final int[][] tierPos = {{2850, 375}, {1775, 375}, {125, 375}};
     private ComputerVision cv;
     private int[] avgRGB;
 
@@ -56,33 +56,35 @@ public class AutonRedC extends LinearOpMode {
         if (opModeIsActive()) {
 
             claw.setPosition(0);
+            sleep(1000);
             // get recognition
             recognition = cv.getAnalysis();
-            if (recognition == -1) {recognition = 0;}
+            telemetry.log().add(String.valueOf(recognition));
+            telemetry.update();
+            if (recognition == -1) {recognition = 2;}
 
             // duck
-            driveTrain.fd(-0.5, 0.6);
-            long start = System.currentTimeMillis();
-            while (System.currentTimeMillis() - start < 2000) {
-                rightWheel.setPower(1);
-                leftWheel.setPower(1);
-            }
+            driveTrain.fd(-0.3, 0.25, 4000);
+            leftWheel.setPower(0.5);
+            rightWheel.setPower(0.5);
+            sleep(5000);
             leftWheel.setPower(0);
             rightWheel.setPower(0);
-            driveTrain.fd(0.5, 0.75);
-            driveTrain.rot(-0.25, 90);
+            driveTrain.fd(0.5, 0.8, 3000);
+            driveTrain.rot(-0.75, 90);
 
             // prepare to place freight
             elevate();
 
             // place freight
-            driveTrain.fd(0.25, 0.5);
+            driveTrain.fd(0.3, 0.25, 4000);
             claw.setPosition(0.6);
-            driveTrain.fd(-0.25, 0.25);
+            sleep(1000);
+            driveTrain.fd(-0.5, 0.25, 3000);
 
             // park
-            driveTrain.rot(0.25, 0);
-            driveTrain.fd(1, 2.);
+            driveTrain.rot(0.75, 0);
+            driveTrain.fd(1, 1.1, 10000);
         }
     }
 
@@ -96,7 +98,7 @@ public class AutonRedC extends LinearOpMode {
         linSlide.setPower(0.25);
         arm.setPower(0.25);
 
-        while (opModeIsActive() && linSlide.isBusy() && arm.isBusy()) {
+        while (opModeIsActive() && (linSlide.isBusy() || arm.isBusy())) {
             idle();
         }
 

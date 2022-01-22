@@ -54,7 +54,7 @@ public class AutonBlueW extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-
+            /*
             claw.setPosition(0);
             // get recognition
 
@@ -103,7 +103,7 @@ public class AutonBlueW extends LinearOpMode {
 
             // park
             driveTrain.rot(-0.25, 0);
-            driveTrain.fd(1, 2.);
+            driveTrain.fd(1, 2.);*/
         }
     }
 }

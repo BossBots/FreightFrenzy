@@ -49,7 +49,7 @@ public class AutonRedW extends LinearOpMode {
 
         if (opModeIsActive()) {
 
-            claw.setPosition(0);
+            /*claw.setPosition(0);
 
             // get recognition
             recognition = cv.getAnalysis();
@@ -88,7 +88,7 @@ public class AutonRedW extends LinearOpMode {
 
             // park
             driveTrain.rot(0.25, 180);
-            driveTrain.fd(1, 2.);
+            driveTrain.fd(1, 2.);*/
         }
     }
 }
