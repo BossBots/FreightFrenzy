@@ -18,7 +18,7 @@ import java.util.List;
 Credits
 - Team 7303 RoboAvatars
 - Adjusted by team 3954 Pink to the Future
-- Further adjusted by Karim
+- Repurposed/adjusted by Karim (not sure about the copyright of this)
 */
 
 public class ContourPipeline extends OpenCvPipeline {
