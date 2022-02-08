@@ -23,6 +23,9 @@ Credits
 
 public class ContourPipeline extends OpenCvPipeline {
     Scalar ORANGE = new Scalar(255, 165, 0);
+    
+    // Color range
+    // https://drive.google.com/file/d/1YAsT5tkQBeEXohxoG3d49mDWyX6oPlND/view?usp=sharing
 
     // Orange (the default color)                         Y      Cr     Cb    (Don't change Y)
     public static Scalar scalarLowerYCrCb = new Scalar(0.0, 191.25, 63.75); // Middle of second quadrant
