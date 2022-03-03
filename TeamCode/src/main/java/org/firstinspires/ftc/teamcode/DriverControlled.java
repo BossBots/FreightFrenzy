@@ -51,12 +51,34 @@ public class DriverControlled extends LinearOpMode {
                 .addStep(0.5, 0.5, 1000)
                 .build();
 
+        int driveTrainMode = 0;
         waitForStart();
         while (opModeIsActive()) {
-
+            //Special mode
+            if (gamepad1.x && gamepad1.y && gamepad1.a && gamepad1.b) {
+                if (gamepad1.dpad_up && driveTrainMode != 0)
+                    driveTrainMode = 0;
+                else if (gamepad1.dpad_left)
+                    drivaTrainMode = 1;
+                else if (gamepad1.dpad_right)
+                    driveTrainMode = 2;
+            }
+            
             // drive
             if (gamepad1.x) {
                 driveTrain.brake(0);
+            } else if (driveTrainMode == 1) {
+                driveTrain.left.setPower(max(-1, min(1, gamepad1.left_stick.y)));
+                drivaTrain.right.setPower(max(-1, min(1, gamepad1.right_stick.y)));
+            } else if (driveTrainMode == 2) {
+                if (gamepad1.left_bumper)
+                    driveTrain.left.setPower(max(-1, min((-1)*gamepad1.left_trigger, 1)));
+                else
+                    driveTrain.left.setPower(max(-1, min(gamepad1.left_trigger, 1)));
+                if (gamepad1.right_bumper)
+                    driveTrain.right.setPower(max(-1, min((-1)*gamepad1.right_trigger, 1)));
+                else
+                    driveTrain.right.setPower(max(-1, min(gamepad1.right_trigger, 1)));
             } else if (mode) {
                 driveTrain.setMode(false);
                 driveTrain.drive((gamepad1.right_trigger - gamepad1.left_trigger)/2, gamepad1.left_stick_x/2);
