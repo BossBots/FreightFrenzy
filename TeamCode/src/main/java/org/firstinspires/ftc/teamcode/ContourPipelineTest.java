@@ -131,7 +131,7 @@ public class ContourPipelineTest extends LinearOpMode {
         telemetry.addData("UpperCr ", crThreshHigh);
         telemetry.addData("UpperCb ", cbThreshHigh);
     }
-    public double inValues(double value, double min, double max){
+    public double inValues(double value, double min, double max) {
         if(value < min){ value = min; }
         if(value > max){ value = max; }
         return value;
