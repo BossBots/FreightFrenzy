@@ -55,8 +55,11 @@ public class AutonRedC extends LinearOpMode {
 
         if (opModeIsActive()) {
 
+            //setup
             claw.setPosition(0);
             sleep(1000);
+            //drive up to team element
+            driveTrain.fd(0.5, 0.4, 3000);
             // get recognition
             recognition = cv.getAnalysis();
             telemetry.log().add(String.valueOf(recognition));
@@ -64,23 +67,25 @@ public class AutonRedC extends LinearOpMode {
             if (recognition == -1) {recognition = 2;}
 
             // duck
+            driveTrain.rot(-0.75, 90);
             driveTrain.fd(-0.3, 0.25, 4000);
+            // TODO: try flinging the duck; increase distance driven back so that we can reach carousel
             leftWheel.setPower(0.5);
             rightWheel.setPower(0.5);
             sleep(5000);
             leftWheel.setPower(0);
             rightWheel.setPower(0);
-            driveTrain.fd(0.5, 0.8, 3000);
-            driveTrain.rot(-0.75, 90);
-
+            
             // prepare to place freight
+            driveTrain.fd(0.5, 0.4, 3000);
+            driveTrain.rot(-0.75, 90); //now turns 180 from start
             elevate();
 
             // place freight
-            driveTrain.fd(0.3, 0.25, 4000);
+            driveTrain.fd(0.3, 0.25, 4000); //adjust distance- should be less
             claw.setPosition(0.6);
             sleep(1000);
-            driveTrain.fd(-0.5, 0.25, 3000);
+            // I cut out driving back. Might need to re-add driving back a little.
 
             // park
             driveTrain.rot(0.75, 0);
