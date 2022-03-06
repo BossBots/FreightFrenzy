@@ -68,7 +68,12 @@ public class TeleTest extends LinearOpMode {
             }
 
             // carousel spins
-            if (gamepad1.b) {
+            if (gamepad2.right_trigger > .1) {
+                leftWheel.setPower(gamepad2.right_trigger);
+                rightWheel.setPower(gamepad2.right_trigger);
+                telemetry.addData("carouselSpeed", gamepad2.right_trigger);
+            }
+            else if (gamepad2.b) {
                 leftWheel.setPower(0.5);
                 rightWheel.setPower(0.5);
             } else if (gamepad1.x) {
