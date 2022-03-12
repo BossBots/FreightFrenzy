@@ -27,7 +27,7 @@ public class AutonRedC extends LinearOpMode {
     private DcMotor arm;
     private Servo claw;
     private int recognition = 0;
-    private final int[][] tierPos = {{2850, 375}, {1775, 375}, {125, 375}};
+    private final int[][] tierPos = {{3400, 375}, {1850, 375}, {500, 375}};
     private ComputerVision cv;
     private int[] avgRGB;
 
@@ -58,20 +58,52 @@ public class AutonRedC extends LinearOpMode {
             claw.setPosition(0);
             sleep(1000);
             // get recognition
-            recognition = cv.getAnalysis();
+            recognition = 2 - cv.getRecognition();
             telemetry.log().add(String.valueOf(recognition));
             telemetry.update();
             if (recognition == -1) {recognition = 2;}
 
             // duck
-            driveTrain.fd(-0.3, 0.25, 4000);
+            driveTrain.fd(-0.5, 0.05, 1000);
+            driveTrain.rot(-0.75, 90);
+            driveTrain.fd(-0.3, 0.38, 4000);
             leftWheel.setPower(0.5);
             rightWheel.setPower(0.5);
             sleep(5000);
             leftWheel.setPower(0);
             rightWheel.setPower(0);
-            driveTrain.fd(0.5, 0.8, 3000);
-            driveTrain.rot(-0.75, 90);
+            driveTrain.fd(0.5, 0.98, 3000);
+            driveTrain.rot(-0.75, 180);
+
+            // prepare to place freight
+            elevate();
+
+            // place freight
+            driveTrain.fd(0.3, 0.22, 4000);
+            claw.setPosition(0.6);
+            sleep(1000);
+            driveTrain.fd(-0.5, 0.25, 3000);
+
+            // park
+            driveTrain.rot(0.75, 90);
+            driveTrain.fd(1, 1.1, 10000);
+            lower();
+            while (opModeIsActive() && (linSlide.isBusy() || arm.isBusy())) {
+                idle();
+            }
+
+            linSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            // duck
+            /*driveTrain.fd(-0.3, 0.25, 4000);
+            leftWheel.setPower(0.5);
+            rightWheel.setPower(0.5);
+            sleep(5000);
+            leftWheel.setPower(0);
+            rightWheel.setPower(0);
+            driveTrain.fd(0.5, 0.75, 3000);
+            // driveTrain.rot(-0.75, 90);
 
             // prepare to place freight
             elevate();
@@ -84,7 +116,7 @@ public class AutonRedC extends LinearOpMode {
 
             // park
             driveTrain.rot(0.75, 0);
-            driveTrain.fd(1, 1.1, 10000);
+            driveTrain.fd(1, 1.1, 10000);*/
         }
     }
 
@@ -95,7 +127,7 @@ public class AutonRedC extends LinearOpMode {
         linSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        linSlide.setPower(0.25);
+        linSlide.setPower(0.4);
         arm.setPower(0.25);
 
         while (opModeIsActive() && (linSlide.isBusy() || arm.isBusy())) {
@@ -104,5 +136,16 @@ public class AutonRedC extends LinearOpMode {
 
         linSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void lower() {
+        linSlide.setTargetPosition(0);
+        arm.setTargetPosition(0);
+
+        linSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        linSlide.setPower(-0.1);
+        arm.setPower(-0.1);
     }
 }

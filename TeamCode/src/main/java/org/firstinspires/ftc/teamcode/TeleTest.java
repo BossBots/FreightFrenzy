@@ -25,6 +25,14 @@ public class TeleTest extends LinearOpMode {
     private boolean initPressClaw = false;
     private boolean finalPressClaw = false;
     private boolean clamp = false;
+    private boolean lsManualControl = false;
+    private boolean armManualControl = false;
+    private final int[][] tierPos = {{0, 0}, {0, 375}, {500, 375}, {3400, 375}};
+    private int currentPos = 0;
+    private boolean initRBPress = false;
+    private boolean finalRBPress = false;
+    private boolean initLBPress = false;
+    private boolean finalLBPress = false;
     private Gamepad.RumbleEffect rumbleEffect;
     private final double T1 = 80;
     private final double T2 = 110;
@@ -57,14 +65,66 @@ public class TeleTest extends LinearOpMode {
             // drive
             driveTrain.drive(gamepad1.right_trigger - gamepad1.left_trigger, gamepad1.left_stick_x);
 
+            // smart manipulation and positioning
+            initLBPress = finalLBPress;
+            initRBPress = finalRBPress;
+            finalLBPress = gamepad1.left_bumper;
+            finalRBPress = gamepad1.right_bumper;
+            if (finalRBPress && !initRBPress) {
+                armManualControl = false;
+                lsManualControl = false;
+                if (currentPos < tierPos.length - 1) {
+                    currentPos += 1;
+                }
+            }
+            if (finalLBPress && !initLBPress) {
+                armManualControl = false;
+                lsManualControl = false;
+                if (currentPos > 0) {
+                    currentPos -= 1;
+                }
+            }
+
             // linear slide
-            if (gamepad1.dpad_up) {
-                linSlide.setPower(0.5);
-            } else if (gamepad1.dpad_down) {
-                linSlide.setPower(-0.5);
+            if (!lsManualControl) {lsManualControl = (gamepad1.dpad_up || gamepad1.dpad_down);}
+            if (lsManualControl) {
+                if (gamepad1.dpad_up) {
+                    linSlide.setPower(0.5);
+                } else if (gamepad1.dpad_down) {
+                    linSlide.setPower(-0.5);
+                } else {
+                    linSlide.setPower(0);
+                    linSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                }
             } else {
-                linSlide.setPower(0);
-                linSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                if (tierPos[currentPos][0] - linSlide.getCurrentPosition() > 20) {
+                    linSlide.setPower(0.3);
+                } else if (tierPos[currentPos][0] - linSlide.getCurrentPosition() < -20) {
+                    linSlide.setPower(-0.3);
+                } else {
+                    linSlide.setPower(0);
+                    linSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                }
+            }
+
+            // arm controls
+            if (!armManualControl) {armManualControl = Math.abs(gamepad1.right_stick_y) > 0.15;}
+            if (armManualControl) {
+                if (Math.abs(gamepad1.right_stick_y) > 0.15) {
+                    arm.setPower(gamepad1.right_stick_y * 0.25);
+                } else {
+                    arm.setPower(0);
+                    arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                }
+            } else {
+                if (tierPos[currentPos][1] - arm.getCurrentPosition() > 20) {
+                    arm.setPower(0.15);
+                } else if (tierPos[currentPos][1] - arm.getCurrentPosition() < -20) {
+                    arm.setPower(-0.15);
+                } else {
+                    arm.setPower(0);
+                    arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                }
             }
 
             // carousel spins
@@ -77,14 +137,6 @@ public class TeleTest extends LinearOpMode {
             } else {
                 leftWheel.setPower(0);
                 rightWheel.setPower(0);
-            }
-
-            // arm controls
-            if (Math.abs(gamepad1.right_stick_y) > 0.15) {
-                arm.setPower(gamepad1.right_stick_y * 0.25);
-            } else {
-                arm.setPower(0);
-                arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
 
             // claw controls
@@ -116,6 +168,7 @@ public class TeleTest extends LinearOpMode {
             telemetry.addData("counts", driveTrain.getCounts());
             telemetry.addData("arm", arm.getCurrentPosition());
             telemetry.addData("slide", linSlide.getCurrentPosition());
+            telemetry.addData("current pos", currentPos);
             telemetry.update();
         }
     }
