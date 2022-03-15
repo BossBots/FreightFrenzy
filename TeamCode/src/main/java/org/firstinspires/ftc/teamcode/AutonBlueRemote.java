@@ -18,7 +18,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
  */
 
 @Autonomous
-public class AutonRedC extends LinearOpMode {
+public class AutonBlueRemote extends LinearOpMode {
 
     private TwoWheel driveTrain;
     private DcMotor leftWheel;
@@ -27,7 +27,7 @@ public class AutonRedC extends LinearOpMode {
     private DcMotor arm;
     private Servo claw;
     private int recognition = 0;
-    private final int[][] tierPos = {{3450, 375}, {1900, 375}, {550, 375}};
+    private final int[][] tierPos = {{3400, 375}, {1850, 375}, {500, 375}};
     private ComputerVision cv;
     private int[] avgRGB;
 
@@ -56,46 +56,44 @@ public class AutonRedC extends LinearOpMode {
         if (opModeIsActive()) {
 
             claw.setPosition(0);
+            sleep(1000);
             // get recognition
             recognition = 2 - cv.getRecognition();
             telemetry.log().add(String.valueOf(recognition));
             telemetry.update();
             if (recognition == -1) {recognition = 2;}
 
+            // duck
+            driveTrain.fd(-0.5, 0.05, 1000);
+            driveTrain.rot(0.75, -90);
+            driveTrain.fd(-0.3, 0.38, 4000);
+            leftWheel.setPower(-0.5);
+            rightWheel.setPower(-0.5);
+            sleep(5000);
+            leftWheel.setPower(0);
+            rightWheel.setPower(0);
+            driveTrain.fd(0.5, 0.98, 3000);
+            driveTrain.rot(0.75, 180);
+
             // prepare to place freight
-            driveTrain.fd(-0.5, 0.1, 1000);
-            driveTrain.rot(-0.75, 90);
-            driveTrain.fd(0.8, 0.32, 5000);
-            driveTrain.rot(-0.75, 180);
             elevate();
 
             // place freight
             driveTrain.fd(0.3, 0.22, 4000);
             claw.setPosition(0.6);
             sleep(1000);
-            driveTrain.fd(-0.6, 0.22, 3000);
-            driveTrain.rot(0.75, 90);
-            lower();
-
-            // duck
-            driveTrain.fd(-0.75, 0.6, 5000); //TODO: Adjust carousel so we spin it
-            driveTrain.fd(-0.3, 0.15, 4000);
-            leftWheel.setPower(0.5);
-            rightWheel.setPower(0.5);
-            sleep(3500);
-            leftWheel.setPower(0);
-            rightWheel.setPower(0);
-            driveTrain.fd(0.8, 0.05, 3000);
-            driveTrain.rot(-0.75, 180);
+            driveTrain.fd(-0.5, 0.25, 3000);
 
             // park
-            //while (opModeIsActive() && (linSlide.isBusy() || arm.isBusy())) {
-            //    idle();
-            //}
-
-            driveTrain.fd(0.5, 0.22, 4000);
             driveTrain.rot(-0.75, -90);
-            driveTrain.fd(0.5, 0.05, 4000);
+            driveTrain.fd(1, 1.1, 10000);
+            lower();
+            while (opModeIsActive() && (linSlide.isBusy() || arm.isBusy())) {
+                idle();
+            }
+
+            linSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             // duck
             /*driveTrain.fd(-0.3, 0.25, 4000);

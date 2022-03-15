@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class ComputerVision {
 
     private OpenCvCamera phoneCam;
-    private final int fractions = 6;
+    private final int fractions = 12;
     private final double[][] topLeft = new double[fractions][2];
     private final double[][] botRight = new double[fractions][2];
     private int[][] avgRGB = new int[fractions][3];
